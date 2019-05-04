@@ -55,6 +55,6 @@ func (p *Pubsub) Save(ctx context.Context, m *pubsub.Message) error {
 }
 
 // Read a message from Pubsub
-func (p *Pubsub) Read() (*pubsub.Message, error) {
+func (p *Pubsub) Read() (chan *pubsub.Message, error) {
 	return nil, nil
 }
