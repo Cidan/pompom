@@ -58,6 +58,8 @@ func (f *FlatFile) doWatch(c chan *pubsub.Message) {
 		return
 	}
 	defer watcher.Close()
+	watcher.Add(f.file)
+	log.Info().Msg("watching")
 	for {
 		select {
 		case event, ok := <-watcher.Events:

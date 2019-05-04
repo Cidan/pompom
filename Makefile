@@ -8,7 +8,7 @@ build:
 
 test:
 	go vet ./...; \
-	go test -v -test.short -covermode=atomic ./...
+	go test -v -timeout 5s -test.short -covermode=atomic ./...
 
 run:
 	pompom
