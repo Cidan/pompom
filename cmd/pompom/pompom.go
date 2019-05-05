@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/Cidan/pompom/settings"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -11,6 +12,7 @@ import (
 
 func main() {
 	setupLogging()
+	settings.Setup("")
 }
 
 func setupLogging() {
