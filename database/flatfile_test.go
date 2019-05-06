@@ -50,6 +50,8 @@ func TestFlatFile_Read(t *testing.T) {
 	assert.Equal(t, m.Attributes["filename"], "watched")
 }
 
+func TestFlatFile_Start(t *testing.T) {
+}
 func TestFlatFile_doRead(t *testing.T) {
 }
 

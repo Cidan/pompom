@@ -26,6 +26,24 @@ func NewFlatFile(file string, watch bool) (*FlatFile, error) {
 	}, nil
 }
 
+func (f *FlatFile) Start(d Database) {
+	c, err := f.Read()
+	if err != nil {
+		log.Panic().Err(err).Msg("unable to start reading")
+		return
+	}
+	for {
+		select {
+		case m := <-c:
+			log.Debug().Msg("saving flat file message to pubsub")
+			err := d.Save(context.Background(), m)
+			if err != nil {
+				log.Panic().Err(err).Msg("error saving message to database")
+			}
+		}
+	}
+}
+
 func (f *FlatFile) Save(ctx context.Context, m *pubsub.Message) error {
 	return nil
 }
@@ -59,10 +77,11 @@ func (f *FlatFile) doWatch(c chan *pubsub.Message) {
 	}
 	defer watcher.Close()
 	watcher.Add(f.file)
-	log.Info().Msg("watching")
+	log.Debug().Str("location", f.file).Msg("watching for files on disk")
 	for {
 		select {
 		case event, ok := <-watcher.Events:
+			log.Debug().Interface("event", event).Msg("got watch event")
 			if !ok {
 				log.Panic().Msg("filesystem watcher was unable to start watching")
 				return
@@ -86,6 +105,7 @@ func (f *FlatFile) doWatch(c chan *pubsub.Message) {
 
 func (f *FlatFile) readFile(file string) (*pubsub.Message, error) {
 	data, err := ioutil.ReadFile(file)
+	log.Debug().Str("filename", file).Msg("reading file from disk")
 	if err != nil {
 		log.Panic().Err(err).Str("file", file).Msg("unable to read created file")
 	}

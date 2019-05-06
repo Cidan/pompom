@@ -9,3 +9,7 @@ func TestSetup(t *testing.T) {
 func Test_setDefaults(t *testing.T) {
 	setDefaults()
 }
+
+func Test_setTests(t *testing.T) {
+	setTests()
+}

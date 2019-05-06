@@ -1,0 +1,5 @@
+level: debug
+input:
+  flatfile:
+    enabled: true
+    location: /tmp

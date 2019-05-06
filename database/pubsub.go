@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/rs/zerolog/log"
 )
 
 // Pubsub struct for connecting and publishing to Pubsub
@@ -43,18 +44,25 @@ func NewPubsub(ctx context.Context, project, topic string) (*Pubsub, error) {
 	}, nil
 }
 
+func (p *Pubsub) Start(d Database) {
+
+}
+
 // Save a message to pubsub
 func (p *Pubsub) Save(ctx context.Context, m *pubsub.Message) error {
 	res := p.topic.Publish(ctx, m)
+	log.Debug().Msg("publishing message to pubsub")
 
 	_, err := res.Get(ctx)
 	if err != nil {
+		log.Debug().Msg("unable to publish message")
 		return err
 	}
+	log.Debug().Msg("message sent")
 	return nil
 }
 
 // Read a message from Pubsub
-func (p *Pubsub) Read() (chan *pubsub.Message, error) {
+func (p *Pubsub) Read(ctx context.Context) (chan *pubsub.Message, error) {
 	return nil, nil
 }
