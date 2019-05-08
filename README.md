@@ -11,7 +11,7 @@ Pom Pom can optionally be configured to hold a local cache of data that is accep
 ### Configuring
 
 ## Tests
-tbd
+Run `make test` for unit and integration tests. Tests require the Google Cloud Pub/Sub emulator running via `gcloud beta emulators pubsub start` using the GCP Cloud SDK
 
 ## License
 MIT
