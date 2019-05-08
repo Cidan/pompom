@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"errors"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/dgraph-io/badger"
@@ -11,7 +12,8 @@ import (
 )
 
 type Cache struct {
-	db *badger.DB
+	db     *badger.DB
+	closed bool
 }
 
 func NewCache() *Cache {
@@ -23,11 +25,15 @@ func NewCache() *Cache {
 		log.Panic().Err(err).Msg("unable to open cache")
 	}
 	return &Cache{
-		db: db,
+		db:     db,
+		closed: false,
 	}
 }
 
 func (c *Cache) Save(ctx context.Context, m *pubsub.Message) error {
+	if c.closed {
+		return errors.New("database is closed")
+	}
 	err := c.db.Update(func(txn *badger.Txn) error {
 		var b bytes.Buffer
 		e := gob.NewEncoder(&b)
@@ -35,8 +41,7 @@ func (c *Cache) Save(ctx context.Context, m *pubsub.Message) error {
 		if err != nil {
 			return err
 		}
-		txn.Set([]byte("yup, sure do"), b.Bytes())
-		err = txn.Commit(func(err error) {})
+		err = txn.Set([]byte("yup, sure do"), b.Bytes())
 		if err != nil {
 			return err
 		}
@@ -50,10 +55,14 @@ func (c *Cache) Save(ctx context.Context, m *pubsub.Message) error {
 }
 
 func (c *Cache) Read() (chan *pubsub.Message, error) {
+	if c.closed {
+		return nil, errors.New("database is closed")
+	}
 	ch := make(chan *pubsub.Message, 1)
 	return ch, nil
 }
 
 func (c *Cache) Close() error {
+	c.closed = true
 	return c.db.Close()
 }

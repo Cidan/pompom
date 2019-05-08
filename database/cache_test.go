@@ -16,13 +16,19 @@ func TestNewCache(t *testing.T) {
 
 func TestCache_Save(t *testing.T) {
 	c := NewCache()
-	err := c.Close()
-	assert.Nil(t, err)
+	assert.NotNil(t, c)
+
+	m := &pubsub.Message{
+		Data: []byte("this data"),
+	}
 
 	c.Save(
 		context.Background(),
-		&pubsub.Message{},
+		m,
 	)
+
+	err := c.Close()
+	assert.Nil(t, err)
 }
 
 func TestCache_Read(t *testing.T) {

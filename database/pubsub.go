@@ -12,6 +12,7 @@ type Pubsub struct {
 	client  *pubsub.Client
 	topic   *pubsub.Topic
 	project string
+	cache   *Cache
 }
 
 // NewPubsub returns a pubsub struct
@@ -41,6 +42,7 @@ func NewPubsub(ctx context.Context, project, topic string) (*Pubsub, error) {
 		client:  client,
 		topic:   t,
 		project: project,
+		cache:   NewCache(),
 	}, nil
 }
 
