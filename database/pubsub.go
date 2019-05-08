@@ -16,7 +16,7 @@ type Pubsub struct {
 }
 
 // NewPubsub returns a pubsub struct
-func NewPubsub(ctx context.Context, project, topic string) (*Pubsub, error) {
+func NewPubsub(ctx context.Context, project, topic, cacheLocation string) (*Pubsub, error) {
 	client, err := pubsub.NewClient(context.Background(), project)
 
 	if err != nil {
@@ -42,7 +42,7 @@ func NewPubsub(ctx context.Context, project, topic string) (*Pubsub, error) {
 		client:  client,
 		topic:   t,
 		project: project,
-		cache:   NewCache(),
+		cache:   NewCache(cacheLocation),
 	}, nil
 }
 

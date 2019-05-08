@@ -13,6 +13,7 @@ func TestNewPubsub(t *testing.T) {
 		context.Background(),
 		"test",
 		"test",
+		"/tmp/badger.pubsub.new",
 	)
 	assert.Nil(t, err)
 	assert.NotNil(t, p)
@@ -23,6 +24,7 @@ func TestPubsub_Save(t *testing.T) {
 		context.Background(),
 		"test",
 		"test",
+		"/tmp/badger.pubsub.save",
 	)
 	assert.Nil(t, err)
 	assert.NotNil(t, p)

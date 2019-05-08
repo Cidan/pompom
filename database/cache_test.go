@@ -9,13 +9,13 @@ import (
 )
 
 func TestNewCache(t *testing.T) {
-	c := NewCache()
+	c := NewCache("/tmp/badger.new")
 	err := c.Close()
 	assert.Nil(t, err)
 }
 
 func TestCache_Save(t *testing.T) {
-	c := NewCache()
+	c := NewCache("/tmp/badger.save")
 	assert.NotNil(t, c)
 
 	m := &pubsub.Message{

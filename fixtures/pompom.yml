@@ -4,4 +4,4 @@ input:
     enabled: true
     location: /tmp
 cache:
-  location: /tmp
+  location: /tmp/

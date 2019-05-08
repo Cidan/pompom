@@ -11,7 +11,6 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/dgraph-io/badger"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 type Cache struct {
@@ -19,10 +18,10 @@ type Cache struct {
 	closed bool
 }
 
-func NewCache() *Cache {
+func NewCache(location string) *Cache {
 	opts := badger.DefaultOptions
-	opts.Dir = viper.GetString("cache.location")
-	opts.ValueDir = viper.GetString("cache.location")
+	opts.Dir = location
+	opts.ValueDir = location
 	db, err := badger.Open(opts)
 	if err != nil {
 		log.Panic().Err(err).Msg("unable to open cache")

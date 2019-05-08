@@ -19,6 +19,7 @@ func main() {
 		context.Background(),
 		viper.GetString("output.pubsub.project"),
 		viper.GetString("output.pubsub.topic"),
+		viper.GetString("cache.location"),
 	)
 
 	// TODO: mux pubsub with a local cache
