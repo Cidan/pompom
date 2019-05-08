@@ -3,12 +3,15 @@ package database
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/gob"
 	"errors"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/dgraph-io/badger"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 )
 
 type Cache struct {
@@ -18,8 +21,8 @@ type Cache struct {
 
 func NewCache() *Cache {
 	opts := badger.DefaultOptions
-	opts.Dir = "/tmp/"
-	opts.ValueDir = "/tmp/"
+	opts.Dir = viper.GetString("cache.location")
+	opts.ValueDir = viper.GetString("cache.location")
 	db, err := badger.Open(opts)
 	if err != nil {
 		log.Panic().Err(err).Msg("unable to open cache")
@@ -41,7 +44,9 @@ func (c *Cache) Save(ctx context.Context, m *pubsub.Message) error {
 		if err != nil {
 			return err
 		}
-		err = txn.Set([]byte("yup, sure do"), b.Bytes())
+		bt := make([]byte, 8)
+		binary.LittleEndian.PutUint64(bt, uint64(time.Now().UnixNano()))
+		err = txn.Set(bt, b.Bytes())
 		if err != nil {
 			return err
 		}

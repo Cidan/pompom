@@ -57,7 +57,8 @@ func (p *Pubsub) Save(ctx context.Context, m *pubsub.Message) error {
 
 	_, err := res.Get(ctx)
 	if err != nil {
-		log.Debug().Msg("unable to publish message")
+		log.Debug().Msg("unable to publish message, storing in cache")
+		p.cache.Save(context.Background(), m)
 		return err
 	}
 	log.Debug().Msg("message sent")

@@ -3,3 +3,5 @@ input:
   flatfile:
     enabled: true
     location: /tmp
+cache:
+  location: /tmp
