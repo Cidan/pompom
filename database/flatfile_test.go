@@ -24,10 +24,9 @@ func TestFlatFile_Read(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, ff)
 
-	c, err := ff.Read()
-	assert.Nil(t, err)
+	c, _ := ff.Read()
 	assert.NotNil(t, c)
-
+	// TODO: select here
 	m := <-c
 	assert.Equal(t, string(m.Data), "fake-data")
 	assert.Equal(t, m.Attributes["filename"], "fake-file")
@@ -37,15 +36,14 @@ func TestFlatFile_Read(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, ff)
 
-	c, err = ff.Read()
-	assert.Nil(t, err)
+	c, _ = ff.Read()
 	assert.NotNil(t, ff)
 
 	// TODO: wait for watcher to be ready, don't sleep
 	time.Sleep(time.Second * 1)
 	err = createFile("../fixtures/watched")
 	assert.Nil(t, err)
-
+	// TODO: select here
 	m = <-c
 	assert.Equal(t, m.Attributes["filename"], "watched")
 }

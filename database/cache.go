@@ -58,12 +58,42 @@ func (c *Cache) Save(ctx context.Context, m *pubsub.Message) error {
 	return nil
 }
 
-func (c *Cache) Read() (chan *pubsub.Message, error) {
-	if c.closed {
-		return nil, errors.New("database is closed")
-	}
-	ch := make(chan *pubsub.Message, 1)
-	return ch, nil
+// TODO: clean this up a bit
+func (c *Cache) Read() (chan *pubsub.Message, chan error) {
+	okch := make(chan *pubsub.Message, 1)
+	erch := make(chan error)
+	go func() {
+		if c.closed {
+			erch <- errors.New("database is closed")
+			return
+		}
+		err := c.db.Update(func(txn *badger.Txn) error {
+			opts := badger.DefaultIteratorOptions
+			opts.PrefetchSize = 10
+			it := txn.NewIterator(opts)
+			defer it.Close()
+			for it.Rewind(); it.Valid(); it.Next() {
+				item := it.Item()
+				v, err := item.Value()
+				if err != nil {
+					return err
+				}
+				var m pubsub.Message
+				var b bytes.Buffer
+				b.Write(v)
+				d := gob.NewDecoder(&b)
+				d.Decode(&m)
+				okch <- &m
+				txn.Delete(item.Key())
+			}
+			return nil
+		})
+		if err != nil {
+			erch <- err
+			return
+		}
+	}()
+	return okch, erch
 }
 
 func (c *Cache) Close() error {
